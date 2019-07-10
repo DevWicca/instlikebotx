@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
     let id = ''
     let password = ''
     let hashtag = 'japan'
-    let likenum = 0
+    let likenum = 5
     let speed = 3000
     let headless = false
 
@@ -14,41 +14,44 @@ const puppeteer = require('puppeteer');
         
     });
     const page = await browser.newPage();
-    await page.setViewport({
-    width: 1800,
-    height: 1000
-});
+//     await page.setViewport({
+//     width: 1800,
+//     height: 1000
+// });
 
   // Open page.
-  //   await page.goto('https://tutorialzine.com');
-
     await page.goto('https://www.instagram.com/accounts/login');
     
-    await page.waitFor(speed)
-    await page.type("[type=\"text\"]",id, {delay: 100}); // id here
-    await page.type("[type=\"password\"]",password, {delay: 100});// password here  
+    // wait for a sec
+    await page.waitFor(()=> document.querySelectorAll("input").length)
+    await page.type("[type=text]",id, {delay: 50}); // id here
+    await page.type("[type=password]",password, {delay: 50});// password here  
     const loginForm = await page.$('.HmktE'); 
     await loginForm.press('Enter')
-    await page.waitFor(speed)
-    console.log("login ")
-    if (!headless) {
-        console.log('headless', headless)
-        const Notifications = await page.$('.HoLwm');
-        await page.waitFor(speed)
-        await Notifications.click()
-    }
+    console.log("Login ")
+    // here if we gonna watch same img and relax
+    // if (!headless) {
+        //     console.log('headless', headless)
+        //     const Notifications = await page.$('.HoLwm');
+        //     await page.waitFor(speed)
+        //     await Notifications.click()
+        // }
+    // wait for a sec
+    await page.waitFor(()=> document.querySelectorAll("[placeholder=Search]").length)
+    // Go to Hashtag
     await page.goto(`https://www.instagram.com/explore/tags/${hashtag}/`);
-    const post = await page.$('._9AhH0');
-    await page.waitFor(speed)
-    // console.log(post, "this is posts")
-    await post.click()
+    // get the first post
+    const post = await page.$$('._9AhH0')
+    console.log(post.length, "found")
+    // open the post 
+    await post[0].click()
     await page.waitFor(speed)
     const arrow = await page.$('.coreSpriteRightPaginationArrow')
-    let i = 0
+    let i = 1
     console.log("start like")
     do { 
         console.log("you like "+ i)
-        await page.$eval("[aria-label=\"Like\"]",el => el.click())
+        await page.$eval("[aria-label=Like]",el => el.click())
         await arrow.click()
         await page.waitFor(speed)
         i++
@@ -57,3 +60,6 @@ const puppeteer = require('puppeteer');
     /// all done 
     if (headless) browser.close();
 })();
+
+
+
